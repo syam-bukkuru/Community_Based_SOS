@@ -148,4 +148,22 @@ router.get("/police/:city", async (req, res) => {
   }
 });
 
+
+/* ================= GET ALL SOS (POLICE DASHBOARD) ================= */
+router.get("/all/:city", async (req, res) => {
+  try {
+    const city = req.params.city;
+
+    const list = await SOS.find({
+      city: { $regex: city, $options: "i" },
+    })
+      .populate("acceptedBy")
+      .sort({ createdAt: -1 });
+
+    res.json(list);
+  } catch (err) {
+    console.error("FETCH ALL SOS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch all SOS" });
+  }
+});
 export default router;

@@ -89,22 +89,22 @@ export default function VolunteerDashboard() {
 
             {/* After accept */}
             {hasAccepted(sos) && (
-              <>
-                <button
-                  className="px-3 py-1 rounded bg-gray-400 text-white"
-                  disabled
-                >
-                  Accepted
-                </button>
+            <>
+              <button
+                onClick={() => navigate(`/tracking/${sos._id}`)}
+                className="px-3 py-1 rounded bg-blue-600 text-white"
+              >
+                Revisit
+              </button>
 
-                <button
-                  onClick={() => resolveSOS(sos._id)}
-                  className="px-3 py-1 rounded bg-green-600 text-white"
-                >
-                  Resolve
-                </button>
-              </>
-            )}
+              <button
+                onClick={() => resolveSOS(sos._id)}
+                className="px-3 py-1 rounded bg-green-600 text-white"
+              >
+                Resolve
+              </button>
+            </>
+          )}
           </div>
         </div>
       ))}

@@ -7,7 +7,9 @@ const router = express.Router();
 
 router.get("/:sosId", async (req, res) => {
   const logs = await TrackingLog.find({ sosId: req.params.sosId })
+    .populate("userId", "name")   
     .sort({ createdAt: 1 });
+
   res.json(logs);
 });
 
