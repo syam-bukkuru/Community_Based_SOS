@@ -1,3 +1,4 @@
+// backend/index.js
 import dotenv from "dotenv";
 dotenv.config(); 
 
@@ -63,9 +64,58 @@ const io = new Server(httpServer, {
 io.on("connection", socket => {
   console.log("Socket connected:", socket.id);
 
-  socket.on("join_sos", sosId => {
+  socket.on("join_sos", async (sosId) => {
     socket.join(sosId);
     console.log(`Socket ${socket.id} joined SOS ${sosId}`);
+
+    try {
+      const sos = await SOS.findById(sosId);
+
+      if (!sos) return;
+
+      // ✅ support BOTH formats
+      const lat = sos?.victimLocation?.lat ?? sos?.lat;
+      const lng = sos?.victimLocation?.lng ?? sos?.lng;
+
+      // 🔴 SEND INITIAL VICTIM POSITION
+      if (lat != null && lng != null) {
+        socket.emit("location_update", {
+          sosId,
+          role: "VICTIM",
+          lat,
+          lng,
+          name: "Victim",
+          time: new Date().toLocaleTimeString(),
+        });
+      }
+
+      // 🟢 SEND LAST KNOWN VOLUNTEER POSITIONS
+      const logs = await TrackingLog.find({ sosId })
+        .sort({ createdAt: -1 })
+        .limit(20);
+
+      const seenUsers = new Set();
+
+      logs.forEach((log) => {
+        if (log.role === "VOLUNTEER") {
+          if (seenUsers.has(String(log.userId))) return;
+          seenUsers.add(String(log.userId));
+        }
+
+        socket.emit("location_update", {
+          sosId,
+          userId: log.userId,
+          role: log.role,
+          lat: log.lat,
+          lng: log.lng,
+          name: "User",
+          time: new Date(log.createdAt).toLocaleTimeString(),
+        });
+      });
+
+    } catch (err) {
+      console.error("join_sos error:", err);
+    }
   });
 
   socket.on("location_update", async data => {

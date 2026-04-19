@@ -1,3 +1,5 @@
+// backend/routes/sos.js
+
 import express from "express";
 import SOS from "../models/SOS.js";
 import User from "../models/User.js";
@@ -17,8 +19,15 @@ router.post("/create", async (req, res) => {
     const { street, city } = await reverseGeocode(lat, lng);
 
     const sos = await SOS.create({
+      victimLocation: {
+        lat,
+        lng,
+      },
+
+      // ✅ keep for backward compatibility
       lat,
       lng,
+
       street,
       city,
       status: "PENDING",
@@ -69,14 +78,23 @@ router.post("/accept/:id", async (req, res) => {
     const sos = await SOS.findById(req.params.id);
     if (!sos) return res.status(404).json({ message: "SOS not found" });
 
-    // ✔ First volunteer activates SOS
+    // ✔ Activate if first time
     if (sos.status === "PENDING") {
       sos.status = "ACTIVE";
-      sos.acceptedBy = userId; // first responder
-      await sos.save();
     }
 
-    // ✔ Allow multiple volunteers (logged separately)
+    // ✅ FIX: safe ObjectId comparison
+    const alreadyAccepted = sos.acceptedBy.some(
+      (id) => id.toString() === userId
+    );
+
+    if (!alreadyAccepted) {
+      sos.acceptedBy.push(userId);
+    }
+
+    await sos.save();
+
+    // ✔ Log action
     await TrackingLog.create({
       sosId: sos._id,
       userId,

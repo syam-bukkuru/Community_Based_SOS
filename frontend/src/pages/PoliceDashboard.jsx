@@ -1,3 +1,5 @@
+// frontend/src/pages/PoliceDashboard.jsx
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -82,7 +84,7 @@ export default function PoliceDashboard() {
 
           <div className="flex gap-3 mt-3">
             <button
-              onClick={() => navigate(`/police/map/${sos._id}`)}
+              onClick={() => navigate(`/live/${sos._id}`)}
               className="px-4 py-1 rounded bg-blue-600 text-white text-sm"
             >
               🔍 View Live Map
@@ -93,13 +95,6 @@ export default function PoliceDashboard() {
               className="px-4 py-1 rounded bg-gray-800 text-white text-sm"
             >
               🧾 Evidence
-            </button>
-
-            <button
-              onClick={() => navigate(`/police-evidence/${sos._id}`)}
-              className="px-3 py-1 rounded bg-blue-600 text-white"
-            >
-              🔍 Evidence Map
             </button>
           </div>
         </div>

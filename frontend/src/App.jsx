@@ -36,11 +36,9 @@ function App() {
         <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
         <Route path="/all-sos" element={<AllSOSAlerts />} />
         <Route path="/tracking/:sosId/victim" element={<VictimTrackingMap />} />
-        <Route path="/police/map/:sosId" element={<PoliceLiveMap />} />
         <Route path="/police/evidence/:sosId" element={<PoliceTrackingTable />} />
         <Route path="/police/evidence" element={<PoliceEvidence />} />
         <Route path="/police/tracking/:sosId" element={<PoliceTrackingPage />} />
-        {/* <Route path="/police-evidence" element={<PoliceEvidenceMap />} /> */}
         <Route path="/police-evidence/:sosId" element={<PoliceEvidenceMap />} />
         <Route path="/police-evidence-demo" element={<PoliceEvidenceDemo />} />
       </Routes>

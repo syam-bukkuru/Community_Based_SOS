@@ -1,4 +1,5 @@
 // frontend/src/pages/Login.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -9,10 +10,26 @@ export default function Login() {
   const navigate = useNavigate();
 
   const submit = async () => {
-    const res = await api.post("/auth/login", { email, password });
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    navigate("/volunteer-dashboard"); // ✅ redirect after login
+    try {
+      const res = await api.post("/auth/login", { email, password });
+
+      // ✅ store auth
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      const role = res.data.user?.role;
+
+      // ✅ ROLE BASED REDIRECT
+      if (role === "POLICE") {
+        navigate("/police");
+      } else {
+        navigate("/volunteer-dashboard");
+      }
+
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Invalid email or password");
+    }
   };
 
   return (
@@ -33,6 +50,7 @@ export default function Login() {
           placeholder="Email Address"
           className="w-full px-4 py-3 border rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          value={email}
           onChange={e => setEmail(e.target.value)}
         />
 
@@ -42,14 +60,17 @@ export default function Login() {
           placeholder="Password"
           className="w-full px-4 py-3 border rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          value={password}
           onChange={e => setPassword(e.target.value)}
         />
 
         {/* Login Button */}
         <button
           onClick={submit}
+          disabled={!email || !password}
           className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold
-                     hover:bg-indigo-700 transition duration-300 shadow-md"
+                     hover:bg-indigo-700 transition duration-300 shadow-md
+                     disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Login
         </button>
