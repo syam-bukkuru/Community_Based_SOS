@@ -31,4 +31,4 @@ const sosSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("SOS", sosSchema);
+export default mongoose.model("SOS", sosSchema);  

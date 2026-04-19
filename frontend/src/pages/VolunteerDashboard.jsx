@@ -23,6 +23,7 @@ export default function VolunteerDashboard() {
   if (!user?.city) return;
 
   const fetchSOS = async () => {
+    
     try {
       const res = await api.get(`/sos/pending/${user.city}`);
       setSosList(res.data);
